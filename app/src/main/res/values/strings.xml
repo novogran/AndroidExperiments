@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidExperiments</string>
+    <string name="agreement_full_text">By pressing this button you confirm the agreement and
+    privacy policy</string>
+    <string name="confidential_info">agreement</string>
+    <string name="privacy_policy">privacy policy</string>
 </resources>
