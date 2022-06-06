@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/agreementTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/agreement_full_text"
+        android:drawablePadding="@dimen/padding_small"
         android:padding="@dimen/padding_small"
-        app:drawableTopCompat="@android:drawable/ic_dialog_alert"
+        android:text="@string/agreement_full_text"
         app:drawableTint="@color/black"
-        android:drawablePadding="@dimen/padding_small"/>
+        app:drawableTopCompat="@android:drawable/ic_dialog_alert"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:contentDescription="@string/android_image_content_description"
+        android:src="@drawable/android_image"
+        app:layout_constraintTop_toBottomOf="@+id/agreementTextView"
+        tools:ignore="MissingConstraints" />
+</androidx.constraintlayout.widget.ConstraintLayout>
