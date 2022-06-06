@@ -4,4 +4,5 @@
     privacy policy</string>
     <string name="confidential_info">agreement</string>
     <string name="privacy_policy">privacy policy</string>
+    <string name="android_image_content_description" translatable="false">Android image</string>
 </resources>
