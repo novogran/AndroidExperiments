@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -18,10 +19,29 @@
         tools:ignore="MissingConstraints" />
 
     <ImageView
+        android:id="@+id/image_view"
         android:layout_width="@dimen/image_size"
         android:layout_height="@dimen/image_size"
         android:contentDescription="@string/android_image_content_description"
         android:src="@drawable/android_image"
         app:layout_constraintTop_toBottomOf="@+id/agreementTextView"
+        tools:ignore="MissingConstraints"
+        android:scaleType="fitXY"/>
+
+    <ImageView
+        android:id="@+id/image_view_for_download"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:contentDescription="@string/android_image_content_description"
+        app:layout_constraintTop_toBottomOf="@+id/image_view"
+        android:scaleType="fitXY"
+        tools:ignore="MissingConstraints" />
+    <ImageView
+        android:id="@+id/glide_image_view"
+        android:layout_width="@dimen/image_size"
+        android:layout_height="@dimen/image_size"
+        android:contentDescription="@string/android_image_content_description"
+        app:layout_constraintTop_toBottomOf="@+id/image_view_for_download"
+        android:scaleType="fitXY"
         tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
