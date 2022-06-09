@@ -2,23 +2,51 @@ package com.example.androidexperiments
 
 import android.graphics.*
 import android.os.Bundle
+import android.text.Editable
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 
+private const val TAG = "TextWatcherTag"
 
 class MainActivity : AppCompatActivity() {
+
+
 
     private companion object{
         const val URL =
             "https://zavistnik.com/wp-content/uploads/2020/03/Android-knigi-zastavka.jpg"
     }
+
+    private lateinit var textInputEditText: TextInputEditText
+
+    private val textWatcher: TextWatcher = object : SimpleTextWatcher() {
+        override fun afterTextChanged(p0: Editable?) {
+            Log.d(TAG,"afterTextChanged $p0")
+            val input = p0.toString()
+            if(input.endsWith("@g")){
+                Log.d(TAG,"programmatically set text")
+                setText("${input}mail.com")
+            }
+        }
+    }
+
+    private fun setText(text: String){
+        textInputEditText.removeTextChangedListener(textWatcher)
+        textInputEditText.setTextCorrectly(text)
+        textInputEditText.addTextChangedListener(textWatcher)
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,9 +57,12 @@ class MainActivity : AppCompatActivity() {
         val confidential = getString(R.string.confidential_info)
         val policy = getString(R.string.privacy_policy)
         val spannableString = SpannableString(fullText)
-        val imageView = findViewById<ImageView>(R.id.image_view)
         val downloadedImage = findViewById<ImageView>(R.id.image_view_for_download)
         val image = findViewById<ImageView>(R.id.glide_image_view)
+        val textInputLayout = findViewById<TextInputLayout>(R.id.textInputLayout)
+        textInputEditText = textInputLayout.editText as TextInputEditText
+        textInputEditText.addTextChangedListener(textWatcher)
+
         downloadedImage.loadGlide(URL)
         image.loadPicasso(URL)
 
@@ -83,4 +114,10 @@ class MainActivity : AppCompatActivity() {
     private fun ImageView.loadPicasso(url:String){
         Picasso.get().load(url).transform(CircleTransform()).into(this)
     }
+
+    private fun TextInputEditText.setTextCorrectly(text:CharSequence){
+        setText(text)
+        setSelection(text.length)
+    }
+
 }
