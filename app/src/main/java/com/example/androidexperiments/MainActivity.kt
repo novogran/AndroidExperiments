@@ -2,6 +2,8 @@ package com.example.androidexperiments
 
 import android.graphics.*
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.SpannableString
 import android.text.Spanned
@@ -11,11 +13,10 @@ import android.util.Log
 import android.util.Patterns.EMAIL_ADDRESS
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -63,17 +64,35 @@ class MainActivity : AppCompatActivity() {
         val image = findViewById<ImageView>(R.id.glide_image_view)
         val textInputLayout = findViewById<TextInputLayout>(R.id.textInputLayout)
         val loginButton = findViewById<Button>(R.id.loginButton)
+        val checkBox = findViewById<CheckBox>(R.id.checkBox)
+        val processBar = findViewById<ProgressBar>(R.id.progressBar)
+        val contentLayout = findViewById<View>(R.id.constraintLayout)
         textInputEditText = textInputLayout.editText as TextInputEditText
         textInputEditText.addTextChangedListener(textWatcher)
 
         downloadedImage.loadGlide(URL)
         image.loadPicasso(URL)
 
+        loginButton.isEnabled = false
+        checkBox.setOnCheckedChangeListener { _, isChecked ->
+            loginButton.isEnabled = true
+        }
+
         loginButton.setOnClickListener{
             if(EMAIL_ADDRESS.matcher(textInputEditText.text.toString()).matches()){
                 hideKeyboard(textInputEditText)
                 loginButton.isEnabled = false
+                contentLayout.visibility = View.GONE
+                processBar.visibility = View.VISIBLE
                 Snackbar.make(loginButton,"Go ti postLogin", Snackbar.LENGTH_LONG).show()
+                Handler(Looper.myLooper()!!).postDelayed({
+                    contentLayout.visibility = View.VISIBLE
+                    processBar.visibility = View.GONE
+                    BottomSheetDialog(this).run {
+                        setContentView(R.layout.dialog)
+                        show()
+                    }
+                },3000)
                 } else {
                     textInputLayout.isErrorEnabled = true
                     textInputLayout.error = getString(R.string.invalid_email_message)

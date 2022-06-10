@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/costrainLayout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:hint="@string/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_small"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/textInputEditText"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
     <TextView
         android:id="@+id/agreementTextView"
         android:layout_width="wrap_content"
@@ -13,8 +32,10 @@
         android:drawablePadding="@dimen/padding_small"
         android:padding="@dimen/padding_small"
         android:text="@string/agreement_full_text"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout"
         app:drawableTint="@color/black"
         app:drawableTopCompat="@android:drawable/ic_dialog_alert" />
+
     <ImageView
         android:id="@+id/image_view"
         android:layout_width="@dimen/image_size"
@@ -23,6 +44,7 @@
         android:src="@drawable/android_image"
         app:layout_constraintTop_toBottomOf="@+id/agreementTextView"
         android:scaleType="fitXY" />
+
     <ImageView
         android:id="@+id/image_view_for_download"
         android:layout_width="@dimen/image_size"
@@ -33,6 +55,7 @@
         app:layout_constraintTop_toBottomOf="@id/agreementTextView"
         app:layout_constraintLeft_toRightOf="@id/image_view"
         android:scaleType="fitXY"/>
+
     <ImageView
         android:id="@+id/glide_image_view"
         android:layout_width="@dimen/image_size"
@@ -41,26 +64,33 @@
         android:contentDescription="@string/android_image_content_description"
         app:layout_constraintTop_toBottomOf="@+id/image_view"
         android:scaleType="fitXY" />
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        android:hint="@string/login"
+
+    <CheckBox
+        android:id="@+id/checkBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_small"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        app:layout_constraintTop_toBottomOf="@+id/glide_image_view">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/textInputEditText"
-            android:inputType="textEmailAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/glide_image_view"
+        android:layout_margin="@dimen/padding_small"
+        android:text="@string/agreement_full_text"
+        android:buttonTint="@color/purple_200"/>
+
     <Button
         android:id="@+id/loginButton"
         android:layout_margin="@dimen/padding_small"
         android:text="@string/login"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        app:layout_constraintBottom_toBottomOf="@id/costrainLayout"
+        app:layout_constraintBottom_toBottomOf="@id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        tools:visibility="visible"/>
+
+</FrameLayout>
