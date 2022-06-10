@@ -8,6 +8,10 @@ import android.text.Spanned
 import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import android.util.Patterns.EMAIL_ADDRESS
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -20,8 +24,6 @@ import com.squareup.picasso.Picasso
 private const val TAG = "TextWatcherTag"
 
 class MainActivity : AppCompatActivity() {
-
-
 
     private companion object{
         const val URL =
@@ -60,22 +62,25 @@ class MainActivity : AppCompatActivity() {
         val downloadedImage = findViewById<ImageView>(R.id.image_view_for_download)
         val image = findViewById<ImageView>(R.id.glide_image_view)
         val textInputLayout = findViewById<TextInputLayout>(R.id.textInputLayout)
+        val loginButton = findViewById<Button>(R.id.loginButton)
         textInputEditText = textInputLayout.editText as TextInputEditText
         textInputEditText.addTextChangedListener(textWatcher)
 
         downloadedImage.loadGlide(URL)
         image.loadPicasso(URL)
 
-//        val netImage = NetImage(URL,object : ImageCallback {
-//            override fun failed() {
-//                Snackbar.make(imageView, "failed", Snackbar.LENGTH_LONG).show()
-//            }
-//
-//            override fun success(bitmap: Bitmap) {
-//                downloadedImage.setImageBitmap(bitmap)
-//            }
-//        })
-//        netImage.start()
+        loginButton.setOnClickListener{
+            if(EMAIL_ADDRESS.matcher(textInputEditText.text.toString()).matches()){
+                hideKeyboard(textInputEditText)
+                loginButton.isEnabled = false
+                Snackbar.make(loginButton,"Go ti postLogin", Snackbar.LENGTH_LONG).show()
+                } else {
+                    textInputLayout.isErrorEnabled = true
+                    textInputLayout.error = getString(R.string.invalid_email_message)
+            }
+        }
+
+        textInputEditText.listenChanges { textInputLayout.isErrorEnabled = false }
 
         val confidentialClickable = MyClickableSpan {
             Snackbar.make(it,"Go to link1", Snackbar.LENGTH_LONG).show()
@@ -118,6 +123,19 @@ class MainActivity : AppCompatActivity() {
     private fun TextInputEditText.setTextCorrectly(text:CharSequence){
         setText(text)
         setSelection(text.length)
+    }
+
+    fun TextInputEditText.listenChanges(block:(text:String) -> Unit) {
+        addTextChangedListener(object : SimpleTextWatcher(){
+            override fun afterTextChanged(p0: Editable?) {
+                block.invoke(p0.toString())
+            }
+        })
+    }
+
+    fun AppCompatActivity.hideKeyboard(view: View){
+        val imm = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(textInputEditText.windowToken, 0)
     }
 
 }
