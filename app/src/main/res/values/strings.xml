@@ -8,4 +8,6 @@
     <string name="login">Login</string>
     <string name="invalid_email_message">Invalid Email</string>
     <string name="valid_email_message">Valid Email</string>
+    <string name="service_is_unavailable">Service is unavailable</string>
+    <string name="attention">Attention</string>
 </resources>
