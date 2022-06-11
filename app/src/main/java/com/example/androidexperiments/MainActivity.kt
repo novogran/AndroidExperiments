@@ -1,6 +1,5 @@
 package com.example.androidexperiments
 
-import android.app.Dialog
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
@@ -12,12 +11,10 @@ import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.util.Patterns.EMAIL_ADDRESS
-import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -35,10 +32,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var textInputEditText: TextInputEditText
+    private lateinit var textInputLayout: TextInputLayout
 
-    private val textWatcher: TextWatcher = object : SimpleTextWatcher() {
+    private val textWatcher = object : SimpleTextWatcher() {
         override fun afterTextChanged(p0: Editable?) {
             Log.d(TAG,"afterTextChanged $p0")
+            textInputEditText.listenChanges { textInputLayout.isErrorEnabled = false }
             val input = p0.toString()
             if(input.endsWith("@g")){
                 Log.d(TAG,"programmatically set text")
@@ -57,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.d(TAG,"onCreate ${savedInstanceState == null}")
 
         val agreementTextView = findViewById<TextView>(R.id.agreementTextView)
         val fullText = getString(R.string.agreement_full_text)
@@ -65,11 +65,11 @@ class MainActivity : AppCompatActivity() {
         val spannableString = SpannableString(fullText)
         val downloadedImage = findViewById<ImageView>(R.id.image_view_for_download)
         val image = findViewById<ImageView>(R.id.glide_image_view)
-        val textInputLayout = findViewById<TextInputLayout>(R.id.textInputLayout)
         val loginButton = findViewById<Button>(R.id.loginButton)
         val checkBox = findViewById<CheckBox>(R.id.checkBox)
         val processBar = findViewById<ProgressBar>(R.id.progressBar)
-        val contentLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
+        val contentLayout = findViewById<View>(R.id.constraintLayout)
+        textInputLayout = findViewById(R.id.textInputLayout)
         textInputEditText = textInputLayout.editText as TextInputEditText
         textInputEditText.addTextChangedListener(textWatcher)
 
@@ -91,22 +91,16 @@ class MainActivity : AppCompatActivity() {
                 Handler(Looper.myLooper()!!).postDelayed({
                     contentLayout.visibility = View.VISIBLE
                     processBar.visibility = View.GONE
-                    val dialog = Dialog(this)
-                    val view = LayoutInflater.from(this).inflate(R.layout.dialog, contentLayout,false)
-                    dialog.setCancelable(false)
-                    view.findViewById<View>(R.id.closeButton).setOnClickListener{
-                        dialog.dismiss()
+                    BottomSheetDialog(this).run {
+                        setContentView(R.layout.dialog)
+                        show()
                     }
-                    dialog.setContentView(view)
-                    dialog.show()
                 },3000)
                 } else {
                     textInputLayout.isErrorEnabled = true
                     textInputLayout.error = getString(R.string.invalid_email_message)
             }
         }
-
-        textInputEditText.listenChanges { textInputLayout.isErrorEnabled = false }
 
         val confidentialClickable = MyClickableSpan {
             Snackbar.make(it,"Go to link1", Snackbar.LENGTH_LONG).show()
@@ -138,6 +132,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG,"onResume")
+        textInputEditText.addTextChangedListener(textWatcher)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG,"onPause")
+        textInputEditText.removeTextChangedListener(textWatcher)
+    }
+
     private fun ImageView.loadGlide(url:String){
         Glide.with(this).load(url).circleCrop().into(this)
     }
@@ -165,6 +171,3 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
-
-
-
