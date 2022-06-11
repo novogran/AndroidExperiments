@@ -1,9 +1,13 @@
 package com.example.androidexperiments
 
+import android.app.Dialog
+import android.app.ProgressDialog.show
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.PersistableBundle
 import android.text.Editable
 import android.text.SpannableString
 import android.text.Spanned
@@ -11,10 +15,13 @@ import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.util.Patterns.EMAIL_ADDRESS
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -27,9 +34,15 @@ private const val TAG = "TextWatcherTag"
 class MainActivity : AppCompatActivity() {
 
     private companion object{
+        const val INITIAL = 0
+        const val PROGRESS = 1
+        const val SUCCESS = 2
+        const val FAILED = 3
         const val URL =
             "https://zavistnik.com/wp-content/uploads/2020/03/Android-knigi-zastavka.jpg"
     }
+
+    private var state = INITIAL
 
     private lateinit var textInputEditText: TextInputEditText
     private lateinit var textInputLayout: TextInputLayout
@@ -57,6 +70,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.d(TAG,"onCreate ${savedInstanceState == null}")
+        savedInstanceState?.let{
+            state = it.getInt("screenState")
+        }
+        Log.d(TAG,"state $state")
 
         val agreementTextView = findViewById<TextView>(R.id.agreementTextView)
         val fullText = getString(R.string.agreement_full_text)
@@ -68,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.loginButton)
         val checkBox = findViewById<CheckBox>(R.id.checkBox)
         val processBar = findViewById<ProgressBar>(R.id.progressBar)
-        val contentLayout = findViewById<View>(R.id.constraintLayout)
+        val contentLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
         textInputLayout = findViewById(R.id.textInputLayout)
         textInputEditText = textInputLayout.editText as TextInputEditText
         textInputEditText.addTextChangedListener(textWatcher)
@@ -87,18 +104,25 @@ class MainActivity : AppCompatActivity() {
                 loginButton.isEnabled = false
                 contentLayout.visibility = View.GONE
                 processBar.visibility = View.VISIBLE
+                state = PROGRESS
                 Snackbar.make(loginButton,"Go ti postLogin", Snackbar.LENGTH_LONG).show()
                 Handler(Looper.myLooper()!!).postDelayed({
+                    state = FAILED
                     contentLayout.visibility = View.VISIBLE
                     processBar.visibility = View.GONE
-                    BottomSheetDialog(this).run {
-                        setContentView(R.layout.dialog)
-                        show()
-                    }
+                    showDialog(contentLayout)
                 },3000)
                 } else {
                     textInputLayout.isErrorEnabled = true
                     textInputLayout.error = getString(R.string.invalid_email_message)
+            }
+        }
+
+        when(state){
+            FAILED -> showDialog(contentLayout)
+            SUCCESS -> {
+                Snackbar.make(contentLayout,"Success",Snackbar.LENGTH_LONG).show()
+                state = INITIAL
             }
         }
 
@@ -130,6 +154,18 @@ class MainActivity : AppCompatActivity() {
             highlightColor = Color.TRANSPARENT
         }
 
+    }
+
+    private fun showDialog(viewGroup: ViewGroup){
+        val dialog = Dialog(this)
+        val view = LayoutInflater.from(this).inflate(R.layout.dialog,viewGroup,false)
+        dialog.setCancelable(false)
+        view.findViewById<View>(R.id.closeButton).setOnClickListener{
+            state = INITIAL
+            dialog.dismiss()
+        }
+        dialog.setContentView(view)
+        dialog.show()
     }
 
     override fun onResume() {
@@ -168,6 +204,11 @@ class MainActivity : AppCompatActivity() {
     fun AppCompatActivity.hideKeyboard(view: View){
         val imm = this.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(textInputEditText.windowToken, 0)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("screenState",state)
     }
 
 }
