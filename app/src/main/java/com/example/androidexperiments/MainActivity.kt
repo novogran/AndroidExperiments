@@ -32,12 +32,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var textInputEditText: TextInputEditText
-    private lateinit var textInputLayout: TextInputLayout
 
-    private val textWatcher = object : SimpleTextWatcher() {
+    private val textWatcher: TextWatcher = object : SimpleTextWatcher() {
         override fun afterTextChanged(p0: Editable?) {
             Log.d(TAG,"afterTextChanged $p0")
-            textInputEditText.listenChanges { textInputLayout.isErrorEnabled = false }
             val input = p0.toString()
             if(input.endsWith("@g")){
                 Log.d(TAG,"programmatically set text")
@@ -56,7 +54,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d(TAG,"onCreate ${savedInstanceState == null}")
 
         val agreementTextView = findViewById<TextView>(R.id.agreementTextView)
         val fullText = getString(R.string.agreement_full_text)
@@ -65,11 +62,11 @@ class MainActivity : AppCompatActivity() {
         val spannableString = SpannableString(fullText)
         val downloadedImage = findViewById<ImageView>(R.id.image_view_for_download)
         val image = findViewById<ImageView>(R.id.glide_image_view)
+        val textInputLayout = findViewById<TextInputLayout>(R.id.textInputLayout)
         val loginButton = findViewById<Button>(R.id.loginButton)
         val checkBox = findViewById<CheckBox>(R.id.checkBox)
         val processBar = findViewById<ProgressBar>(R.id.progressBar)
         val contentLayout = findViewById<View>(R.id.constraintLayout)
-        textInputLayout = findViewById(R.id.textInputLayout)
         textInputEditText = textInputLayout.editText as TextInputEditText
         textInputEditText.addTextChangedListener(textWatcher)
 
@@ -102,6 +99,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        textInputEditText.listenChanges { textInputLayout.isErrorEnabled = false }
+
         val confidentialClickable = MyClickableSpan {
             Snackbar.make(it,"Go to link1", Snackbar.LENGTH_LONG).show()
         }
@@ -130,18 +129,6 @@ class MainActivity : AppCompatActivity() {
             highlightColor = Color.TRANSPARENT
         }
 
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG,"onResume")
-        textInputEditText.addTextChangedListener(textWatcher)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG,"onPause")
-        textInputEditText.removeTextChangedListener(textWatcher)
     }
 
     private fun ImageView.loadGlide(url:String){
