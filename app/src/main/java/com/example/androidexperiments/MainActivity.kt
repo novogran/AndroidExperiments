@@ -1,5 +1,6 @@
 package com.example.androidexperiments
 
+import android.app.Dialog
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
@@ -11,10 +12,12 @@ import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.util.Patterns.EMAIL_ADDRESS
+import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -66,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         val loginButton = findViewById<Button>(R.id.loginButton)
         val checkBox = findViewById<CheckBox>(R.id.checkBox)
         val processBar = findViewById<ProgressBar>(R.id.progressBar)
-        val contentLayout = findViewById<View>(R.id.constraintLayout)
+        val contentLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
         textInputEditText = textInputLayout.editText as TextInputEditText
         textInputEditText.addTextChangedListener(textWatcher)
 
@@ -88,10 +91,14 @@ class MainActivity : AppCompatActivity() {
                 Handler(Looper.myLooper()!!).postDelayed({
                     contentLayout.visibility = View.VISIBLE
                     processBar.visibility = View.GONE
-                    BottomSheetDialog(this).run {
-                        setContentView(R.layout.dialog)
-                        show()
+                    val dialog = Dialog(this)
+                    val view = LayoutInflater.from(this).inflate(R.layout.dialog, contentLayout,false)
+                    dialog.setCancelable(false)
+                    view.findViewById<View>(R.id.closeButton).setOnClickListener{
+                        dialog.dismiss()
                     }
+                    dialog.setContentView(view)
+                    dialog.show()
                 },3000)
                 } else {
                     textInputLayout.isErrorEnabled = true
@@ -158,3 +165,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
+
+
